@@ -1,27 +1,27 @@
 from scipy.spatial.distance import cdist
+from utils.utils import get_descriptors_and_keypoints
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 
-
 def skip_diag_strided(matrix: np.ndarray) -> np.ndarray:
-    """ Функція для прибрання з матриці діагональних елементів"""
+    """ Function to remove diagonal elements"""
     rows = matrix.shape[0]
     strided = np.lib.stride_tricks.as_strided
     s0, s1 = matrix.strides
     return strided(matrix.ravel()[1:], shape=(rows - 1, rows), strides=(s0 + s1, s1)).reshape(rows, -1)
 
 
-def get_descriptors_and_keypoints(images, n_features=500, detector=None):
-    ORB = cv2.ORB_create(nfeatures=n_features) if detector is None else detector
-    descriptors_per_image = []
-    keypoints_per_image = []
-
-    for i, img in enumerate(images):
-        keypoints, descriptors = ORB.detectAndCompute(img, None)
-        descriptors_per_image.append(descriptors)
-        keypoints_per_image.append(keypoints)
-    return descriptors_per_image, keypoints_per_image
+# def get_descriptors_and_keypoints(images, n_features=500, detector=None):
+#     ORB = cv2.ORB_create(nfeatures=n_features) if detector is None else detector
+#     descriptors_per_image = []
+#     keypoints_per_image = []
+#
+#     for i, img in enumerate(images):
+#         keypoints, descriptors = ORB.detectAndCompute(img, None)
+#         descriptors_per_image.append(descriptors)
+#         keypoints_per_image.append(keypoints)
+#     return descriptors_per_image, keypoints_per_image
 
 
 class DescriptorsReduction:
@@ -79,7 +79,7 @@ def database_descriptors_reduction(database_samples_bits: np.ndarray, reduction_
     return np.asarray(selected_descriptors_per_sample)
 
 
-"""### Демонстрація впливу скорочення дескрипторів"""
+"""### Descriptors reduction impact demonstration"""
 
 
 def extract_by_index(sequence, index: int, with_stacking=False):

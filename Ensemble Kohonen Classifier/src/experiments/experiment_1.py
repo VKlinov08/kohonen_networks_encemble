@@ -7,7 +7,7 @@ from .common import *
 from models.utils.utils import *
 from models import kohonen_network, ensemble, learning_interface, descriptors_filtration
 
-"""### Тестування одиничної мережі Кохонена"""
+"""### Research of using a single Kohonen Network"""
 DEFAULT_TEST_PARAMS = TestParams()
 
 

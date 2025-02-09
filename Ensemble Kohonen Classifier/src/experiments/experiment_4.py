@@ -2,7 +2,7 @@ import numpy as np
 import sys
 
 sys.path.append('..')
-from .common import ensemble_classification_test, TestParams, test_parameters_generator
+from .common import ensemble_classification_test, TestParams, get_test_params_generator
 from models.learning_interface import *
 from matplotlib import pyplot as plt
 from matplotlib import ticker
@@ -33,7 +33,7 @@ def get_plot_dict(n_neurons_list, training_images, class_names,
     if len(test_params.epochs_list) != 1:
         raise ValueError("List of epochs for current experiment must be fixed and equals 1!")
 
-    generator = test_parameters_generator(n_neurons_list, test_params)
+    generator = get_test_params_generator(n_neurons_list, test_params)
     generated_test_images, true_labels = make_test_images(training_images,
                                                           transformation_params,
                                                           with_labels=True,

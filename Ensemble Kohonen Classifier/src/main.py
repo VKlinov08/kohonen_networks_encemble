@@ -14,8 +14,8 @@ def main():
     # experiment_1.run(training_images, class_names)
     # experiment_2.run(training_images)
     # experiment_3.run(classifier, training_images)
-    experiment_4.run(training_images, class_names)
-    # experiment_5.run(training_images)
+    # experiment_4.run(training_images, class_names)
+    experiment_5.run(training_images)
     
 
 if __name__ == '__main__':

@@ -85,88 +85,9 @@ class TestParams:
                 self.reduction_number_list)
 
 
-def test_parameters_generator(n_neurons_list: list, test_params: TestParams):
+def get_test_params_generator(n_neurons_list: list, test_params: TestParams):
     from itertools import product
 
     generator = product(n_neurons_list,
                         *test_params.get_values())
     return generator
-
-
-
-"""
-
-
-
-
-n_neurons_list = [1, 3, 5, 7, 10, 15, 20, 25]
-pd = get_plot_dict(n_neurons_list, 5)
-visualize_plot_dict(pd)
-
-from itertools import product
-
-n_neurons_list = [1, 3, 5, 10, 25, 50]
-epochs_list = [10]
-alpha0_list = [0.25]
-reduction_number_list = [None]
-normalized_list = [True]
-detector_params_list = [500]
-decision_bound_list = [0.25]
-
-generator = product(n_neurons_list,
-                    epochs_list,
-                    alpha0_list,
-                    reduction_number_list,
-                    normalized_list,
-                    detector_params_list,
-                    decision_bound_list)
-generated_test_images, true_labels = make_test_images(train_images, with_labels=True, plus_one=True)
-accuracy_list = []
-lt_list, tt_list = [], []
-
-for n_neurons, epochs, alpha0, reduction_number, normalized, detector_params, decision_bound in generator:
-    if reduction_number is not None and reduction_number > detector_params:
-        continue
-    print("\n--------------------------------")
-    print(n_neurons, epochs, alpha0, reduction_number, normalized, detector_params, decision_bound)
-    cl, acc, lt, tt = classifier_single_test(train_images,
-                                             generated_test_images,
-                                             true_labels,
-                                             n_neurons, epochs, alpha0, reduction_number, normalized, detector_params,
-                                             decision_bound, plus_one=True)
-
-    accuracy_list.append(acc)
-    lt_list.append(lt)
-    tt_list.append(tt)
-
-from matplotlib import pyplot as plt
-from matplotlib import ticker
-
-fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(12, 5))
-axes[0].plot(n_neurons_list, lt_list, marker='o', color='red')
-axes[0].set_xlim(-0.05, 51)
-axes[0].set_xlabel("Кількість нейронів на еталон")
-axes[0].set_ylabel('Час на навчання, c')
-axes[0].xaxis.set_major_locator(ticker.FixedLocator(n_neurons_list))
-
-axes[1].plot(n_neurons_list, tt_list, marker='o', color='blue')
-axes[1].set_xlim(-0.05, 51)
-axes[1].set_xlabel("Кількість нейронів на еталон")
-axes[1].set_ylabel('Час на класифікацію тестової вибірки, c')
-axes[1].xaxis.set_major_locator(ticker.FixedLocator(n_neurons_list))
-plt.plot()
-
-from matplotlib import pyplot as plt
-from matplotlib import ticker
-
-fig, ax = plt.subplots()
-ax.plot(n_neurons_list, accuracy_list, marker='o')
-ax.set_xlim(-0.05, 51)
-ax.set_ylim(0, 1)
-ax.set_xlabel("Кількість нейронів на еталон")
-ax.set_ylabel('Точність тестової класифікації')
-ax.set_title("500 дескрипторів, 10 епох навчання, коефіцієнт навчання 0.25 ")
-ax.xaxis.set_major_locator(ticker.FixedLocator(n_neurons_list))
-plt.plot()
-
-"""

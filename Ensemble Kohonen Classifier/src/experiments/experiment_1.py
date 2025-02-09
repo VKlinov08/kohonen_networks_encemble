@@ -1,5 +1,3 @@
-from sklearn.metrics import accuracy_score
-import numpy as np
 import sys
 sys.path.append('..')
 
@@ -88,7 +86,7 @@ def run(training_images, class_names,
     n_neurons_list = [len(sample_bits)]
 
     # Train a Kohonen Network using a common set of descriptors and initial centers we have got recently.
-    generator = test_parameters_generator(n_neurons_list, test_params)
+    generator = get_test_params_generator(n_neurons_list, test_params)
     generated_test_images, true_labels = make_test_images(training_images,
                                                           transformation_params,
                                                           with_labels=True,

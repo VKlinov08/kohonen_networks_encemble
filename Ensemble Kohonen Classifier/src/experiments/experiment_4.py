@@ -8,7 +8,7 @@ from matplotlib import pyplot as plt
 from matplotlib import ticker
 
 """
-    Research of accuracy of the classifier based on changing of a number of centroids per a class.
+    A study of classifier accuracy based on varying the number of centroids per class.
 """
 
 DEFAULT_TEST_PARAMS = TestParams(500, [5],

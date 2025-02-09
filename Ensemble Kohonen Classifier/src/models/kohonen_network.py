@@ -12,10 +12,10 @@ def binary_normalization(distance: str, x_float: np.ndarray):
 def vq_error(x_array: np.ndarray, distance: str, centroids=None, normalize_input: bool = False):
     """
     Vector Quantazation Error evaluation
-    :param x_array:
-    :param distance:
-    :param centroids:
-    :param normalize_input:
+    :param x_array: numpy.ndarray - array of descriptors.
+    :param distance: str - string that describe what kind of distance is used.
+    :param centroids: numpy.ndarray - array of centroids
+    :param normalize_input: bool - marker for binary normalization
     :return:
     """
     if not isinstance(x_array.dtype, float):
@@ -46,15 +46,6 @@ class KohonenNet:
     def error(self, x_array, centroids=None, normalize_input: bool = False):
         if centroids is None:
             centroids = self.centroids
-        # if not isinstance(x_array.dtype, float):
-        #     x_array = x_array.astype(float)
-        # if normalize_input:
-        #     x_array = self.binary_normalization(x_array)
-        #
-        # norms = cdist(x_array, centroids, metric=self.train_distance)
-        # min_norms = np.amin(norms, axis=1)
-        # n = min_norms.shape[0]
-        # return np.square(min_norms).sum() / n
         return vq_error(x_array, self.train_distance, centroids, normalize_input)
 
     def training_step_(self, x, alpha):

@@ -10,12 +10,12 @@ DEFAULT_CLASS_NAMES_PATH = r'..\resources\coins\classnames.txt'
 def main():
     training_images, class_names = image_loading.load_training_images(DEFAULT_IMAGES_PATH, DEFAULT_CLASS_NAMES_PATH)
     # show_reduction_impact(training_images, 0, 500, 500, 2500)
-    # demo(training_images, class_names, test_classification=True)
+    demo(training_images, class_names, test_classification=True)
     # experiment_1.run(training_images, class_names)
     # experiment_2.run(training_images)
     # experiment_3.run(classifier, training_images)
     # experiment_4.run(training_images, class_names)
-    experiment_5.run(training_images)
+    # experiment_5.run(training_images)
     
 
 if __name__ == '__main__':

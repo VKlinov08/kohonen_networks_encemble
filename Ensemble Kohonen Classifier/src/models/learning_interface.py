@@ -15,12 +15,13 @@ def get_labels_per_image(n_classes, n_descriptors):
     return labels_per_sample
 
 
-def check_descriptors(descriptors):
+def check_uneven_size(descriptors):
     lengths = list(map(len, descriptors))
     min_len = min(lengths)
+    # If number of descriptors per image is uneven so ve equalize it by a minimal number.
     if not all(list(map(lambda length: length == min_len, lengths))):
-        descriptors = [sample[:min_len] for sample in descriptors]
-    return descriptors
+        return False, min_len
+    return True, -1
 
 
 class ClassifierInitParams:
@@ -101,22 +102,28 @@ class EnsembleImageClassifier:
         epochs = self.epochs if train_params.epochs is None else train_params.epochs
         alpha0 = self.alpha0 if train_params.alpha0 is None else train_params.alpha0
         distance = self.distance if train_params.distance is None else train_params.distance
-        descriptors_func = self.descriptors_func if train_params.descriptors_func is None else train_params.descriptors_func
+        descriptors_func = self.descriptors_func if train_params.descriptors_func is None\
+            else train_params.descriptors_func
         n_threads = self.n_threads if train_params.n_threads is None else train_params.n_threads
         self.class_names = train_params.class_names
 
-        if len(train_images) < 1: return
+        if len(train_images) < 1:
+            print("Size of a list with training images is too low (less than 1)!")
+            return
 
         train_descriptors = EnsembleImageClassifier.get_descriptors_per_image_(train_images,
                                                                                train_params.detector_params,
                                                                                descriptors_func)
-        train_descriptors = check_descriptors(train_descriptors)
+        n_classes = len(train_descriptors)
+        is_even_size, min_len = check_uneven_size(train_descriptors)
         train_bits = np.asarray([np.unpackbits(sample, axis=1) for sample in train_descriptors])
+
+        if not is_even_size:
+            train_bits = database_descriptors_reduction(train_bits, min_len)
 
         if train_params.reduction_number is not None:
             train_bits = database_descriptors_reduction(train_bits, train_params.reduction_number)
 
-        n_classes = len(train_descriptors)
         ndim = train_bits.shape[2]
         if train_params.parallel:
             self.ensemble = ParallelSelfLearningEnsemble(n_classes, n_neurons, ndim, distance, n_threads,

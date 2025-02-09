@@ -65,7 +65,7 @@ def load_training_images(images_path, class_names_path, extension: str = '.webp'
         return path
 
     extension = '.' + extension if extension[0] != '.' else extension
-    reg_pattern = f"\*{extension}" if images_path[-1] != '\\' else f"*{extension}"
+    reg_pattern = "\\*" + extension if images_path[-1] != '\\' else "*" + extension
     found_images_paths = glob.glob(images_path + reg_pattern)
 
     class_names = list(map(drop_last_n, class_names))

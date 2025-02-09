@@ -11,11 +11,24 @@ from models.learning_interface import *
 def ensemble_classification_test(train_images, test_images, true_labels,
                                  init_params: ClassifierInitParams,
                                  train_params: ClassifierTrainParams, plus_one=False):
+    """
+
+    :param train_images: List[np.ndarray] - images for classifier learning
+    :param test_images: List[np.ndarray] - images to classify
+    :param true_labels: labels of test images
+    :param init_params: parameters for classifier creation
+    :param train_params: parameters for classifier learning
+    :param plus_one: generated_test_images was made with `plus_one` option which means all labels
+    starts from 1 instead of 0.
+    :return: classifier - inctance of EnsembleImageClassifier,
+             acc - AccuracyScore,
+             training_time, testing_time - float number 
+    """
     classifier = EnsembleImageClassifier(init_params)
     start_training = perf_counter()
     classifier.train(train_images, train_params)
     training_time = perf_counter() - start_training
-    print(f"Час тренування: {training_time:.4f} секунд")
+    print(f"Learning Time: {training_time:.4f} s")
 
     # Класифікація еталонів
     classification_time_avg = 0.0
@@ -27,10 +40,10 @@ def ensemble_classification_test(train_images, test_images, true_labels,
                                                     train_params.decision_bound,
                                                     by_name=True, with_stats=True, with_error=True))
         sample_classification_time = perf_counter() - classification_start
-        print(f"\t{sample_classification_time:.4f} секунд на класифікацію еталона")
+        print(f"\t{sample_classification_time:.4f} s for reference image classification")
         classification_time_avg += sample_classification_time
     print("\n")
-    print(f"\t{classification_time_avg / len(train_images):.4f} середній час на класифікацію еталона")
+    print(f"\t{classification_time_avg / len(train_images):.4f} s - average time for reference image classification")
 
     # Класифікація тестових зображень
     pred_labels = []
@@ -44,11 +57,11 @@ def ensemble_classification_test(train_images, test_images, true_labels,
         pred_labels.append(label)
 
     testing_time = perf_counter() - testing_start
-    print(f"Час тестування: {testing_time} секунд. ~{testing_time / 360:.5f} секунд на зображення")
+    print(f"Test Time: {testing_time} s. ~{testing_time / 360:.5f} s per image.")
 
     print("Accuracy")
     acc = accuracy_score(true_labels, pred_labels)
-    print(acc)
+    print(f"{acc:.3f} / 1.")
     print(np.unique(pred_labels, return_counts=True))
     return classifier, acc, training_time, testing_time
 
@@ -82,73 +95,8 @@ def test_parameters_generator(n_neurons_list: list, test_params: TestParams):
 
 
 """
-def get_plot_dict(n_neurons_list, epochs, training_images):
-    from itertools import product
-    epochs_list = [epochs]
-    alpha0_list = [0.1, 0.25, 0.5, 0.75, 0.9]
-
-    reduction_number_list = [None]
-    normalized_list = [True]
-    detector_params_list = [500]
-    decision_bound_list = [0.25]
-
-    generator = product(n_neurons_list,
-                        epochs_list,
-                        alpha0_list,
-                        reduction_number_list,
-                        normalized_list,
-                        detector_params_list,
-                        decision_bound_list)
-    generated_test_images, true_labels = make_test_images(training_images, with_labels=True, plus_one=True)
-    plot_dict = {"epochs": epochs, 'accuracy': {}}
-
-    for n_neurons, epochs, alpha0, reduction_number, normalized, detector_params, decision_bound in generator:
-        if reduction_number is not None and reduction_number > detector_params:
-            continue
-        print("\n--------------------------------")
-        print(n_neurons, epochs, alpha0, reduction_number, normalized, detector_params, decision_bound)
-        cl, acc, _, _ = classifier_single_test(training_images,
-                                               generated_test_images,
-                                               true_labels,
-                                               n_neurons, epochs, alpha0, reduction_number, normalized, detector_params,
-                                               decision_bound, plus_one=True)
-        key = f"{alpha0}"
-        if key not in plot_dict['accuracy'].keys():
-            plot_dict['accuracy'][key] = [acc]
-        else:
-            plot_dict['accuracy'][key].append(acc)
-    return plot_dict
 
 
-def visualize_plot_dict(n_neurons_list, plot_dict):
-    from matplotlib import pyplot as plt
-    from matplotlib import ticker
-    fig, ax = plt.subplots()
-    line_legends = []
-    acc_matrix = []
-    keys = list(plot_dict['accuracy'].keys())
-    for key in keys:
-        acc_matrix.append(plot_dict['accuracy'][key])
-    acc_matrix = np.asarray(acc_matrix)
-    max_index = np.argmax(np.mean(acc_matrix, axis=1))
-    best = keys[max_index]
-
-    for key in keys:
-        if key != best:
-            line, = ax.plot(n_neurons_list, plot_dict['accuracy'][key], label=key, marker='o', alpha=0.4)
-        else:
-            line, = ax.plot(n_neurons_list, plot_dict['accuracy'][key], label=key, marker='o')
-        line_legends.append(line)
-
-    ax.legend(title='Коефіцієнт навчання', handles=line_legends)
-    ax.set_xlim(-0.05, 26)
-    ax.set_ylim(0, 1)
-    ax.set_xlabel("Кількість нейронів на еталон")
-    ax.set_ylabel('Точність тестової класифікації')
-    epochs = plot_dict["epochs"]
-    ax.set_title(f"500 дескрипторів, {epochs} епох навчання")
-    ax.xaxis.set_major_locator(ticker.FixedLocator(n_neurons_list))
-    plt.plot()
 
 
 n_neurons_list = [1, 3, 5, 7, 10, 15, 20, 25]

@@ -5,11 +5,17 @@ from dataclasses import dataclass, field
 import numpy as np
 
 
-@dataclass(init=True)
+@dataclass()
 class ImageTransformationsParams:
     rotation_angles: Tuple[int] | List[int] = field(default=(0, 30, 45, 60, 90, 135, 180, 270), init=True)
     scaling: Tuple[float] | List[float] = field(default=(1, 0.75, 0.5), init=True)
     shifting: Tuple[bool] | List[bool] = field(default=(0, 100, -100), init=True)
+
+    def __init__(self, transformation_dict: dict = None):
+        if transformation_dict is not None:
+            ImageTransformationsParams.rotation_angles = transformation_dict["rotation_angles"]
+            ImageTransformationsParams.scaling = transformation_dict["scaling"]
+            ImageTransformationsParams.shifting = transformation_dict["shifting"]
 
     def get_values(self):
         return [self.rotation_angles, self.scaling, self.shifting]
@@ -21,7 +27,7 @@ DEFAULT_TRANSFORMATION_PARAMS = ImageTransformationsParams()
 def make_test_images(training_images,
                      transformation_params: ImageTransformationsParams = DEFAULT_TRANSFORMATION_PARAMS,
                      with_labels: bool = False,
-                     plus_one: bool = False):
+                     plus_one: bool = True):
     from itertools import product
     test_images = []
     true_labels = []
